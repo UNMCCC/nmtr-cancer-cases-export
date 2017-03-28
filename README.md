@@ -38,5 +38,5 @@ sqlcmd -U Username -P=password -S MOSAICDATABASE -i C:\\IQ\\nmtr\_export.sql -s"
 
 The NMTRUploadAndMove task starts the WinSCP is on the Mosaiq Outbound interfaceserver ignites a bat file in C:\\NMTRScripts encoding the WinSCP file transfer
 
-![image](https://cloud.githubusercontent.com/assets/403087/24419117/5b8aded4-13ab-11e7-8c88-ac4d88a638dd.png)
+![image](https://cloud.githubusercontent.com/assets/403087/24421530/ba9fa596-13b3-11e7-849c-5cc07255a054.png)
 
