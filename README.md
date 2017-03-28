@@ -14,7 +14,7 @@ Registry.
 
 ### What UNMCCC DOES NOW
 
-![](media/b7280fbb761f00b3d2ac577f7579e662.png)
+![image](https://cloud.githubusercontent.com/assets/403087/24419093/4a7ad856-13ab-11e7-9b35-2c09a174ab43.png)
 
 Automation process
 ------------------
@@ -50,10 +50,10 @@ sqlcmd -U Username -P=password -S MOSAICDATABASE -i C:\\IQ\\nmtr\_export.sql
 -s";" -W -h-1 -o
 \\\\SERVERPATH\\app2\\MOSAIQ\_App\\EXPORT\\NMTR\\Upload\\UNM\_NMTR\_%date:\~-4,4%\_%date:\~-10,2%.txt
 
-![](media/7b0a4f816d02b267b73653c2cf292e32.png)
+![image](https://cloud.githubusercontent.com/assets/403087/24419110/577ad66e-13ab-11e7-9ffc-d78f1075f28b.png)
 
 The NMTRUploadAndMove task starts the WinSCP is on the Mosaiq Outbound interface
 server ignites a bat file in C:\\NMTRScripts encoding the WinSCP file transfer
 
-![](media/84a8d0e7c8621752f395ed5a773d36ac.png)
+![image](https://cloud.githubusercontent.com/assets/403087/24419117/5b8aded4-13ab-11e7-8c88-ac4d88a638dd.png)
 
