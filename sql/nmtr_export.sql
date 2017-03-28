@@ -2,6 +2,11 @@
 /*KB modified 8/29/12 to take out trx_amt and modified Aclose.CLS_ID to prior month
 KB modified 4-26-12 for 2.3 Upgrade (ICD9 fields had to be linked, etc.)*/
 
+declare @TodayMonthAgo as Date = dateadd(month,-1,GetDate())
+declare @StartOfMonth as Date = DateAdd( day, 1 - Day( @TodayMonthAgo ), @TodayMonthAgo )
+declare @EndOfMonth as Date = DateAdd( day, -1, DateAdd( month, 1, @StartOfMonth ) )
+
+Set nocount on
 
 SELECT distinct     
  Ident.IDA AS MRN, 
@@ -45,7 +50,7 @@ FROM
  LEFT OUTER JOIN Topog T3 ON CHG.TPG_ID3 = T3.TPG_ID
  LEFT OUTER JOIN Topog T4 ON CHG.TPG_ID4 = T4.TPG_ID
  WHERE  
-CONVERT(CHAR(8),Exported_Prof_DtTm,112) between '20170201' and '20170228' /*using only prof export date*/
+CONVERT(CHAR(8),Exported_Prof_DtTm,112) between @StartOfMonth and @EndOfMonth /*using only prof export date*/
 and CPT.Billable in ('3','2') /*Prof and Tech only for */
 and Facility.Name like 'UNMMG%'
   --and CPT.CPT_Code <> 'PREPY'
