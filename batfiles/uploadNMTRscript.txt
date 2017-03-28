@@ -1,0 +1,5 @@
+open sftp://username:password@nmtr.ipaddress/ 
+
+put \\MQAPPLYRSRVR\MOSAIQ_App\EXPORT\NMTR\Upload\*.csv /CRTC/*.csv
+
+exit

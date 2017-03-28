@@ -1,0 +1,1 @@
+sqlcmd -U Username -P password -S MOSAICDATABASE -i C:\NMTR\nmtr_export.sql -s";" -W -h-1 -o \\SERVERPATH\app2\MOSAIQ_App\EXPORT\NMTR\Upload\UNM_NMTR_%date:~-4,4%_%date:~-10,2%.txt
