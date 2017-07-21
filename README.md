@@ -1,9 +1,11 @@
 Overview
 --------
 
-By State law, cancer is a reportable disease, and we ought to notify the state about the cancer cases the UNMCCC sees each month.
+By State law, cancer is a reportable disease. The UNM Cancer Center must notify the state about any new cancer cases the UNMCCC sees each month. The reporting includes any cases seen at any of the UNM medical facilities, including but not limited to the Comprehensive Cancer Center.
 
-We need to procure lists of new cases to the state registry in a monthly basis. The process described here accomplish the state law reporting requirements. We implemented a sequence of automated actions: We trigger a Mosaiq Database SQL query using a once a windows scheduler monthly task. The query results in a comma-delimited file with a list of cancer cases. Then we trigger a secure file transfer that places the resulting comma-delimited file in the NM Tumor Registry.
+We procure lists of new cases to the New Mexico state registry in a monthly basis. The process described here facilitates the state law reporting requirement. What we do is collect the new cases from the two electronic medical record (EMR) systems, merge the lists, deduplicate the new cases, and export them in HL7 format. That's is the extent of what is described here, but note that the HL7 ADT A08 feeds are then scrubbed by the CAS listener, part of the CNExT casefinding software.  CNExT is used by the local registry experts at the UNMCCC to curate, abstract and translate the typical billing codes provided by the UNM Cerner and Mosaiq EMRs into actual medical diagnoses.
+
+We implemented a sequence of automated actions: We trigger a Mosaiq Database SQL query using a once a windows scheduler monthly task. The query results in a comma-delimited file with a list of cancer cases. Then we trigger a secure file transfer that places the resulting comma-delimited file in the NM Tumor Registry. We also retrieve the UNMH comma delimited data file feed, and run both files through a Perl script that deduplicates, curates and transforms the format into HL7 ADT A08 format.
 
 ### What UNMCCC DOES NOW
 
