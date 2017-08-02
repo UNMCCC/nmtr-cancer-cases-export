@@ -213,6 +213,7 @@ foreach $file (@docfiles) {
            print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
            print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
            if ($dx1=~/\d/) { 
+             $dx1 =~ s/\.//;
              $cdesc1 = $icd9{$dx1} ;
              if($cdesc1=~/\w+/){ 
                 $csys1 ='I9';
@@ -225,6 +226,7 @@ foreach $file (@docfiles) {
              print FOUT 'DG1|1|' . $csys1. '|' . $dx1 . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
            }
            if ($dx2=~/\d/) { 
+             $dx2 =~ s/\.//;
              $cdesc2 = $icd9{$dx2} ;
              if($cdesc2=~/\w+/){ 
                 $csys2 ='I9';
@@ -237,6 +239,7 @@ foreach $file (@docfiles) {
              print FOUT 'DG1|1|' . $csys2 . '|' . $dx2 . '|' . $cdesc2 . '||D|||Y|' . "\r\n";
            }
            if ($dx3 =~ /\d/) { 
+                $dx3 =~ s/\.//;
                 $cdesc3 = $icd9{$dx3} ;
              if($cdesc3=~/\w+/){ 
                 $csys3 ='I9';
@@ -249,6 +252,7 @@ foreach $file (@docfiles) {
              print FOUT 'DG1|1|' . $csys3 . '|' . $dx3 . '|' . $cdesc3 . '||D|||Y|' . "\r\n";
            }
            if ($dx4=~ /\d/) { 
+                $dx4 =~ s/\.//;
                 $cdesc4 = $icd9{$dx4} ;
              if($cdesc4=~/\w+/){ 
                 $csys4 ='I9';
