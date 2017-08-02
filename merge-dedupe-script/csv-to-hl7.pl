@@ -178,7 +178,7 @@ foreach $file (@docfiles) {
             #print " $mrndob, $dates: $unmccc{$mrndob}{$dates}\n";
            @tumorcase = split(/,/,$unmccc{$mrndob}{$dates});
            for (my $j=0 ; $j<=21; $j++){
-             $tumorcase[$j] =~ s/^\s+|\s+$//g;
+              $tumorcase[$j] =~ s/^\s+|\s+$//g;
            } 
            $mrn = $tumorcase[0]; #print "Size tc  $#tumorcase , MRN $mrn\n";
            $first  = $tumorcase[1];
@@ -222,7 +222,7 @@ foreach $file (@docfiles) {
                   $csys1 ='I10';
                 }
              }
-             print FOUT 'DG1|1|' . $csys1. '|' . $dx1 . '|' . $cdesc1 . '||D|||Y|' . "\r\n";}
+             print FOUT 'DG1|1|' . $csys1. '|' . $dx1 . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
            }
            if ($dx2=~/\d/) { 
              $cdesc2 = $icd9{$dx2} ;
@@ -234,7 +234,7 @@ foreach $file (@docfiles) {
                   $csys2 ='I10';
                 }
              }
-             print FOUT 'DG1|1|' . $csys2 . '|' . $dx2 . '|' . $cdesc2 . '||D|||Y|' . "\r\n";}
+             print FOUT 'DG1|1|' . $csys2 . '|' . $dx2 . '|' . $cdesc2 . '||D|||Y|' . "\r\n";
            }
            if ($dx3 =~ /\d/) { 
                 $cdesc3 = $icd9{$dx3} ;
@@ -246,7 +246,7 @@ foreach $file (@docfiles) {
                   $csys3 ='I10';
                 }
              }
-            print FOUT 'DG1|1|' . $csys3 . '|' . $dx3 . '|' . $cdesc3 . '||D|||Y|' . "\r\n";}
+             print FOUT 'DG1|1|' . $csys3 . '|' . $dx3 . '|' . $cdesc3 . '||D|||Y|' . "\r\n";
            }
            if ($dx4=~ /\d/) { 
                 $cdesc4 = $icd9{$dx4} ;
@@ -258,7 +258,7 @@ foreach $file (@docfiles) {
                   $csys4 ='I10';
                 }
              }
-            print FOUT 'DG1|1|' . $csys4 . '|' . $dx4 . '|' . $cdesc4 . '||D|||Y|' . "\r\n";}
+             print FOUT 'DG1|1|' . $csys4 . '|' . $dx4 . '|' . $cdesc4 . '||D|||Y|' . "\r\n";
            }
            if ($cptcode) {print 'DG1|1|I10|' . $cptcode .'|' . $cptdes . '||||||';}
            undef $ethnic;
