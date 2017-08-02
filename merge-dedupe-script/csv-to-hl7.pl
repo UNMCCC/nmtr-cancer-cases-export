@@ -53,6 +53,8 @@ while(<ICD10>){
    /\s+/;
    $code10 = $`;
    $code10def = $';
+   $code10def =~ s/\r\n//;
+   $code10def =~ s/\n//;
    $icd10{$code10} = $code10def;
 }
 close(ICD10);
@@ -62,6 +64,8 @@ while(<ICD9>){
    /\s+/;
    $code9 = $`;
    $code9def = $';
+   $code9def =~ s/\r\n//;
+   $code9def =~ s/\n//;
    $icd9{$code9} = $code9def;
 }
 close(ICD9);
@@ -93,16 +97,19 @@ foreach $file (@docfiles) {
      
       open(DOC, "$file") or print("Error opening $file $!\n");
       my $file_as_string = <DOC>;
-      close(DOC);##  print "file closed \n";
+      close(DOC);
      
-      my @tfile = split(/\n/,$file_as_string);      #    print "Size TC is $#tumorcase \n";
-     
+      my @tfile = split(/\n/,$file_as_string);     
+      
       foreach $line (@tfile){
          @tumorcase = split(/,/,$line);
          $last = $tumorcase[0]; #print "Size tc  $#tumorcase , FNAME $fullname\n";
+         $last =~ s/^"//;       
          @fname = split(/\s/,$tumorcase[1]);
          $first  = $fname[0];
+         $first =~ s/"$//;
          $middle = $fname[1];
+         $middle =~ s/"$//;
          $street = $tumorcase[2];
          $city = $tumorcase[3];
          $state = $tumorcase[4];
@@ -174,7 +181,7 @@ foreach $file (@docfiles) {
            $i++;
            $outfile='unmccc'. $i.'.hl7';
            $outfiled = 'unmccc'. $i;
-           open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+      
             #print " $mrndob, $dates: $unmccc{$mrndob}{$dates}\n";
            @tumorcase = split(/,/,$unmccc{$mrndob}{$dates});
            for (my $j=0 ; $j<=21; $j++){
@@ -209,11 +216,9 @@ foreach $file (@docfiles) {
            $dx4 = $tumorcase[19];
            $cptcode = $tumorcase[20]; 
            $cptdes = $tumorcase[21];
-           print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
-           print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
-           print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
-           if ($dx1=~/\d/) { 
-             $dx1 =~ s/\.//;
+           
+           if ($dx1=~/\d+/) { 
+             $dx1 =~ s/\.//g;
              $cdesc1 = $icd9{$dx1} ;
              if($cdesc1=~/\w+/){ 
                 $csys1 ='I9';
@@ -223,10 +228,14 @@ foreach $file (@docfiles) {
                   $csys1 ='I10';
                 }
              }
+             open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+             print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
+             print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
+             print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
              print FOUT 'DG1|1|' . $csys1. '|' . $dx1 . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
            }
-           if ($dx2=~/\d/) { 
-             $dx2 =~ s/\.//;
+           if ($dx2=~/\d+/) { 
+             $dx2 =~ s/\.//g;
              $cdesc2 = $icd9{$dx2} ;
              if($cdesc2=~/\w+/){ 
                 $csys2 ='I9';
@@ -236,11 +245,15 @@ foreach $file (@docfiles) {
                   $csys2 ='I10';
                 }
              }
+             open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+             print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
+             print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
+             print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
              print FOUT 'DG1|1|' . $csys2 . '|' . $dx2 . '|' . $cdesc2 . '||D|||Y|' . "\r\n";
            }
-           if ($dx3 =~ /\d/) { 
-                $dx3 =~ s/\.//;
-                $cdesc3 = $icd9{$dx3} ;
+           if ($dx3 =~ /\d+/) { 
+             $dx3 =~ s/\.//g;
+             $cdesc3 = $icd9{$dx3} ;
              if($cdesc3=~/\w+/){ 
                 $csys3 ='I9';
              }else{
@@ -249,11 +262,15 @@ foreach $file (@docfiles) {
                   $csys3 ='I10';
                 }
              }
+             open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+             print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
+             print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
+             print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
              print FOUT 'DG1|1|' . $csys3 . '|' . $dx3 . '|' . $cdesc3 . '||D|||Y|' . "\r\n";
            }
-           if ($dx4=~ /\d/) { 
-                $dx4 =~ s/\.//;
-                $cdesc4 = $icd9{$dx4} ;
+           if ($dx4=~ /\d+/) { 
+            $dx4 =~ s/\.//g;
+            $cdesc4 = $icd9{$dx4} ;
              if($cdesc4=~/\w+/){ 
                 $csys4 ='I9';
              }else{
@@ -262,6 +279,10 @@ foreach $file (@docfiles) {
                   $csys4 ='I10';
                 }
              }
+             open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+             print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
+             print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
+             print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
              print FOUT 'DG1|1|' . $csys4 . '|' . $dx4 . '|' . $cdesc4 . '||D|||Y|' . "\r\n";
            }
            if ($cptcode) {print 'DG1|1|I10|' . $cptcode .'|' . $cptdes . '||||||';}
