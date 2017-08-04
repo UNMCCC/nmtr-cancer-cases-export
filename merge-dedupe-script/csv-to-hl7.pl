@@ -43,7 +43,7 @@ my ($dod,$expired, $dos, $physic, $dx1, $dx2, $dx3, $dx4, $cptcode, $cptdes,$vit
 my $fullname; my @fname;
 my %unmccc=();
 my %icd10=(); my %icd9=();
-my ($code9,$code9def,$code10,$code10def);
+my ($code9,$code9def,$code10,$code10def,$orig_code);
 my ($desc1, $desc2, $desc3, $desc4);
 my ($cdesc1, $cdesc2, $cdesc3, $cdesc4);
 my ($csys1, $csys2, $csys3, $csys4);
@@ -217,7 +217,8 @@ foreach $file (@docfiles) {
            $cptcode = $tumorcase[20]; 
            $cptdes = $tumorcase[21];
            
-           if ($dx1=~/\d+/) { 
+           if ($dx1=~/\d+/) {
+             $orig_code = $dx1; 
              $dx1 =~ s/\.//g;
              $cdesc1 = $icd9{$dx1} ;
              if($cdesc1=~/\w+/){ 
@@ -232,9 +233,10 @@ foreach $file (@docfiles) {
              print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
              print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
              print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
-             print FOUT 'DG1|1|' . $csys1. '|' . $dx1 . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
+             print FOUT 'DG1|1|' . $csys1. '|' . $orig_code . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
            }
            if ($dx2=~/\d+/) { 
+             $orig_code = $dx2;
              $dx2 =~ s/\.//g;
              $cdesc2 = $icd9{$dx2} ;
              if($cdesc2=~/\w+/){ 
@@ -252,6 +254,7 @@ foreach $file (@docfiles) {
              print FOUT 'DG1|1|' . $csys2 . '|' . $dx2 . '|' . $cdesc2 . '||D|||Y|' . "\r\n";
            }
            if ($dx3 =~ /\d+/) { 
+             $orig_code = $dx3;
              $dx3 =~ s/\.//g;
              $cdesc3 = $icd9{$dx3} ;
              if($cdesc3=~/\w+/){ 
@@ -266,9 +269,10 @@ foreach $file (@docfiles) {
              print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
              print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
              print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
-             print FOUT 'DG1|1|' . $csys3 . '|' . $dx3 . '|' . $cdesc3 . '||D|||Y|' . "\r\n";
+             print FOUT 'DG1|1|' . $csys3 . '|' . $orig_code . '|' . $cdesc3 . '||D|||Y|' . "\r\n";
            }
            if ($dx4=~ /\d+/) { 
+            $orig_code = $dx4;
             $dx4 =~ s/\.//g;
             $cdesc4 = $icd9{$dx4} ;
              if($cdesc4=~/\w+/){ 
@@ -283,7 +287,7 @@ foreach $file (@docfiles) {
              print FOUT 'MSH|^~\&|MosaiQ||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
              print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
              print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
-             print FOUT 'DG1|1|' . $csys4 . '|' . $dx4 . '|' . $cdesc4 . '||D|||Y|' . "\r\n";
+             print FOUT 'DG1|1|' . $csys4 . '|' . $orig_code . '|' . $cdesc4 . '||D|||Y|' . "\r\n";
            }
            if ($cptcode) {print 'DG1|1|I10|' . $cptcode .'|' . $cptdes . '||||||';}
            undef $ethnic;
