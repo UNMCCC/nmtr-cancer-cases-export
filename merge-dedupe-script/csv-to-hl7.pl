@@ -70,11 +70,6 @@ while(<ICD9>){
 }
 close(ICD9);
 
-#my @fruits = keys %icd9;
-#for my $fruit (@fruits) {
-#    print "The color of '$fruit' is $icd9{$fruit}\n";
-#}
-
 ##
 ##  read all in a string  
 undef $/;
@@ -103,7 +98,7 @@ foreach $file (@docfiles) {
       
       foreach $line (@tfile){
          @tumorcase = split(/,/,$line);
-         $last = $tumorcase[0]; #print "Size tc  $#tumorcase , FNAME $fullname\n";
+         $last = $tumorcase[0]; 
          $last =~ s/^"//;       
          @fname = split(/\s/,$tumorcase[1]);
          $first  = $fname[0];
@@ -128,7 +123,7 @@ foreach $file (@docfiles) {
          $dx4 = $tumorcase[17]; 
          $dos = $tumorcase[18]; 
  
-         my $temp = $mrn . '-' . $dob;  #  print "$temp\n";
+         my $temp = $mrn . '-' . $dob;  
          $unmccc{$temp}{"$dos"}  = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx1, $dx2, $dx3, $dx4, $cptcode, $cptdes";
       }
     }else{
@@ -136,14 +131,14 @@ foreach $file (@docfiles) {
       # Read the contents of the PT file
       open(DOC, "$file") or print("Error opening $file $!\n");
       my $file_as_string = <DOC>;
-      close(DOC);##  print "file closed \n";
+      close(DOC);
      
        my @tfile = split(/\n/,$file_as_string);      #    print "Size TC is $#tumorcase \n";
      
        foreach $line (@tfile){
 
          @tumorcase = split(/,/,$line);
-         $mrn = $tumorcase[0]; #print "Size tc  $#tumorcase , MRN $mrn\n";
+         $mrn = $tumorcase[0]; 
          $first  = $tumorcase[1];
          $middle = $tumorcase[2];
          $last = $tumorcase[3]; 
@@ -165,7 +160,7 @@ foreach $file (@docfiles) {
          $dx4 = $tumorcase[19]; 
          $cptcode = $tumorcase[20]; 
          $cptdes = $tumorcase[21]; 
-         my $temp = $mrn . '-' . $dob;  #  print "$temp\n";
+         my $temp = $mrn . '-' . $dob;
          $unmccc{$temp}{"$dos"}  = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx1, $dx2, $dx3, $dx4, $cptcode, $cptdes";
        }
      }
@@ -182,12 +177,11 @@ foreach $file (@docfiles) {
            $outfile='unmccc'. $i.'.hl7';
            $outfiled = 'unmccc'. $i;
       
-            #print " $mrndob, $dates: $unmccc{$mrndob}{$dates}\n";
            @tumorcase = split(/,/,$unmccc{$mrndob}{$dates});
            for (my $j=0 ; $j<=21; $j++){
               $tumorcase[$j] =~ s/^\s+|\s+$//g;
            } 
-           $mrn = $tumorcase[0]; #print "Size tc  $#tumorcase , MRN $mrn\n";
+           $mrn = $tumorcase[0];
            $first  = $tumorcase[1];
            $middle = $tumorcase[2];
            $last = $tumorcase[3]; 
@@ -289,7 +283,9 @@ foreach $file (@docfiles) {
              print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first . '^' . $middle . '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
              print FOUT 'DG1|1|' . $csys4 . '|' . $orig_code . '|' . $cdesc4 . '||D|||Y|' . "\r\n";
            }
-           if ($cptcode) {print 'DG1|1|I10|' . $cptcode .'|' . $cptdes . '||||||';}
+           if ($cptcode) {print FOUT 'DG1|1|I10|' . $cptcode .'|' . $cptdes . '||||||';}
+           undef $cptcode; undef $cptdes; 
+           undef $dx1; undef $dx2; undef $dx3; undef $dx4;
            undef $ethnic;
            $vitalflag = 'A';
            close(FOUT);
