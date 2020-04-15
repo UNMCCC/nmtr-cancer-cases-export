@@ -36,10 +36,11 @@
 ##############################################################
 use strict;
 use Data::Dumper qw(Dumper);
- 
+
 ##
 ##  declarations
 ##
+my $sizename;
 my $file; my $outfile; my $source;
 my $clp_code; my $line; my $true; my $false = 0;
 my $unmhfile_as_string ; my $unmcccfile_as_string ;
@@ -62,7 +63,7 @@ my $kkk = 0; my $jjj = 0;
 #
 #  make a lookup table for ICD-10 codes and definitions.
 #
-open(ICD10,"icd10cm_codes_2017.txt") or die "Couldnt open lookup table for icd 10 icd10cm_codes_2017 \n";
+open(ICD10,"icd10cm_codes_2018.txt") or die "Couldnt open lookup table for icd 10 icd10cm_codes_2018 \n";
 while(<ICD10>){
    /\s+/;                                                                                                     ## Match space(s)
    $code10 = $`;                                                                                    ## code is before space
@@ -111,78 +112,45 @@ foreach $file (@docfiles) {
        if ($file=~/^PFS/){
             ### file parsed with UNMH style
              $source = 'Cerner';
-             $unmhfilename = $file;     
+             $unmhfilename = $source.'-'.$file;     
              open(DOC, "$file") or print("Error opening $file $!\n");
              my @tfile = <DOC>;
              close(DOC);
              ##   print "Size UNMHTFILE is $#tfile \n ";
+            
              shift(@tfile);
              foreach $line (@tfile){
-                         @tumorcase = split(/,/,$line);
-                        $tumorcase[0] =~ s/^\s+//;
-                        @fname = split(/\s+/,$tumorcase[0]);
-                        ##
-                        ##  The name comes as a full string.  Good luck parsing parts!
-                        if($#fname ==1){ # 2 elements
-                                $last  = $fname[0];
-                                $first = $fname[1];   ##   warn("Name 2 ELMNT  $#fname elements 0 $fname[0]  1 $fname[1] ");
-                        }elsif($#fname == 2){ # 3 els
-                                 if (length($fname[2])<=2) { ## chances this is a middle name
-                                         $last  = $fname[0];
-                                         $first = $fname[1];
-                                         $middle = $fname[2];
-                                 }else{
-                                         $last  = $fname[0] . ' ' . $fname[1];
-                                         $first = $fname[2];
-                                         $middle = '';
-                                 }                ##warn("Name has 3 ELM, index is $#fname Elements 0 $fname[0]  1 $fname[1] 2 $fname[2] ");
-                        }elsif($#fname ==3){
-                                 if (length($fname[3])<=2) { ## chances this is a middle name
-                                         $last  = $fname[0] . ' ' . $fname[1];
-                                         $first = $fname[2];
-                                         $middle = $fname[3];
-                                 }else{
-                                         $last  = $fname[0] . ' ' . $fname[1] . ' ' . $fname[2];
-                                         $first = $fname[3];
-                                 }        ##warn("Name 4 ELMNT has index $#fname elements 0 $fname[0]  1 $fname[1] 2 $fname[2] and 3 $fname[3]");
-                        }elsif($#fname >3){
-                                  ##warn("Name has index $#fname elements $fname[0]  $fname[1] $fname[2] and $fname[3], etc");    
-                                 for($fi=0; $fi < ($#fname -2); $fi++){
-                                              if($fi>0){
-                                                        $last = $last . ' ';
-                                             }
-                                             $last  = $last . $fname[$fi] ;
-                                 }
-                                 $first = $fname[$#fname-1];
-                                 $middle = $fname[$#fname];
-                        }
-                        $street = $tumorcase[1];  $city = $tumorcase[2];
-                        $state = $tumorcase[3];   $zip = $tumorcase[4];
-                        $race = $tumorcase[5];    $sex = $tumorcase[6];
-                        $ssn = $tumorcase[7];     $dob = convertdate($tumorcase[8]);
+                        @tumorcase = split(/,/,$line);
+                        $street = $tumorcase[0];  $city = $tumorcase[1];
+                        $state = $tumorcase[2];   $zip = $tumorcase[3];
+                        $race = $tumorcase[4];    $sex = $tumorcase[5];
+                        $ssn = $tumorcase[6];     $dob = convertdate($tumorcase[7]);
                         ## Problem with file source.   Two types of rows 
                        ## From column "DR" on, there may be an extra column --  DR. Name may be broken in two or more parts.
                        ## Then the row will have an EXTRA column.  THat's your cue to decide what's what.
                        ## CHECK how many columns (18 or 19?) to decide what to do.
-                       if ($#tumorcase ==17){
-                             $physic = $tumorcase[9];    $dod = $tumorcase[10];
+                       if ($#tumorcase ==19){
+                             $physic = $tumorcase[8];    
+                             $dod = $tumorcase[9];
                              if ($dod =~ /X/){$dod=1};       #turn deceased flag into boolean
-                             $mrn = $tumorcase[11]; 
-                             $icd9 = $tumorcase[13];                          ##icd9             ALWAYS EMPTY
-                             $icd10P = $tumorcase[14];                      ## icd10           PRIMARY DIAG
-                             $dxOrder = $tumorcase[15];                    ##dx  priority     order in priority (primary, second..)
-                             $icd10 = $tumorcase[16];                         ## icd10          secondary / comorb.
-                             $dos = convertdate($tumorcase[17]); 
-                        }elsif($#tumorcase==18){
-                             $physic = $tumorcase[9] . ' ' . $tumorcase[10];  
-                             $dod = $tumorcase[11];
+                             $mrn = $tumorcase[10]; 
+                             $icd9 = $tumorcase[12];                          ##icd9             ALWAYS EMPTY
+                             $icd10P = $tumorcase[13];                      ## icd10           PRIMARY DIAG
+                             $dxOrder = $tumorcase[14];                    ##dx  priority     order in priority (primary, second..)
+                             $icd10 = $tumorcase[15];                         ## icd10          secondary / comorb.
+                             $dos = convertdate($tumorcase[16]); 
+                             $last  = $tumorcase[17]; $first = $tumorcase[18]; $middle = $tumorcase[19];
+                        }elsif($#tumorcase==20){
+                             $physic = $tumorcase[8] . ' ' . $tumorcase[9];  
+                             $dod = $tumorcase[10];
                              if ($dod =~ /X/){$dod=1};
-                             $mrn = $tumorcase[12]; 
-                             $icd9 = $tumorcase[14];                         ## icd9             ALWAYS EMPTY
-                             $icd10P = $tumorcase[15];                     ## icd10           PRIMARY
-                             $dxOrder = $tumorcase[16];                   ## dx priority... ORDER OF PRIOR.
-                             $icd10 = $tumorcase[17];                        ## dx code              secondary
-                             $dos = convertdate($tumorcase[18]); 
+                             $mrn = $tumorcase[11];
+                             $icd9 = $tumorcase[13];                         ## icd9             ALWAYS EMPTY
+                             $icd10P = $tumorcase[14];                     ## icd10           PRIMARY
+                             $dxOrder = $tumorcase[15];                   ## dx priority... ORDER OF PRIOR.
+                             $icd10 = $tumorcase[16];                        ## dx code              secondary
+                             $dos = convertdate($tumorcase[17]);
+                             $last  = $tumorcase[18]; $first = $tumorcase[19]; $middle = $tumorcase[20];
                         }
                         my $temp = $mrn . '-' . $dob;                       ## Associative array key MRN+DOB
                         if ($dxOrder !~/\d/){  
@@ -207,11 +175,12 @@ foreach $file (@docfiles) {
                         }
                         $kkk++;
              }     ## final line / end of this PFS file  / close foreach loop.
+           
        }else{
              # File is UNMCCC
              $source = 'Mosaiq';
              # Read the contents of the PT file
-             $unmcccfilename = $file;
+             $unmcccfilename = $source .'-'. $file;      
              open(DOC, "$file") or print("Error opening $file $!\n");
              my @tfile = <DOC>;      
              close(DOC);                              ##      print "Size UNMCCCFILE is $#tfile \n ";
@@ -226,7 +195,7 @@ foreach $file (@docfiles) {
                        $dod = convertdate($tumorcase[12]);
                        $expired = convertdate($tumorcase[13]);
                        $dos = convertdate($tumorcase[14]); 
-                       $physic = $tumorcase[15];
+                       $physic = parseUnmCccName($tumorcase[15]);
                        $dx1 = $tumorcase[16];   ## primary -- well, maybe.
                        $dx2 = $tumorcase[17];   ## 1st secondarty
                        $dx3 = $tumorcase[18];   ## 2nd second
@@ -253,6 +222,7 @@ foreach $file (@docfiles) {
        }  ## END of IF, where we check whether this was UH/PFS or UNMCCC
        
        print "Lines $unmcccfilename UNMCC parsed: $jjj \n Lines $unmhfilename  UH parsed $kkk\n";
+
        $jjj =  0; $kkk = 0;
        ##
        ## dedupe
@@ -261,22 +231,22 @@ foreach $file (@docfiles) {
   
 }    ## End of processing for this file, accumulate data for next file.
 
+
 ##
 ## 2) Once info is in associative (hash) arrays, we dedupe it, and output as HL7.
+
 my $i=0;my $outfiled;
 foreach my $mrndob (sort keys %unmccc) {
        foreach my $dates ( sort keys %{$unmccc{$mrndob}}) {
                my $plaindate = $dates;  $plaindate =~ s/\s+//g;  
                my $plainmrndob = $mrndob;  $plainmrndob =~ s/\s+//g;$plainmrndob=~s/\"//g;
-               $outfiled = 'unmccc'. $mrndob . $dates;
-               $outfile   = 'unmccc'. $plainmrndob . $plaindate . '.hl7';  
-               open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";
+              
                ##
                ##  get the first record with mrn-dob-dos and valid DX.
                $true =1;
                my $tt = 1;
                while($true){
-                      
+              
                      if (exists $unmccc{$mrndob}{$dates}{$tt}){
                          
                            @tumorcase = split(/,/,$unmccc{$mrndob}{$dates}{$tt});
@@ -312,7 +282,11 @@ foreach my $mrndob (sort keys %unmccc) {
                                    $true = $false;
                             }
                      }
-               }      
+               }   
+               $outfiled = 'unmccc'. $mrndob . $dates;
+               $outfile   = $source .'-'. $plainmrndob . $plaindate . '.hl7';  
+              
+               open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";   
                print FOUT 'MSH|^~\&|' . $source . '||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
                print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
                print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first ;
@@ -320,7 +294,7 @@ foreach my $mrndob (sort keys %unmccc) {
                      print FOUT '^' . $middle;
                } 
                print FOUT '||' . $dob . '|' . $sex . '||' . $race . '|' . $street . '^^' . $city . '^' . $state . '^' .$zip . '||' . $phone . '||||||' . $ssn . '|||' . $ethnic . '||||||||' . $vitalflag . "\r\n";
-               print FOUT 'PV1|||||||' . $physic . '||||||||||||||||||||||||||||||||||||||' . $dos . '||||||||'. "\r\n";
+               print FOUT 'PV1|||||||^' . $physic . '||||||||||||||||||||||||||||||||||||||' . $dos . '||||||||'. "\r\n";
                print FOUT 'DG1|' . $dxOrder . '|' . $csys1. '|' . $orig_code . '|' . $cdesc1 . '||D|||Y|' . "\r\n";
                ##
                ## loop over all other possible DiagX for this mrn-dob-dos.
@@ -356,6 +330,32 @@ sub  convertdate
     }
     return $dat;
     
+}
+sub parseUnmCccName
+{
+   my $fname = shift;
+   my @nparts = split(/\s/,$fname);
+   my $first = $nparts[0];
+   my $f  = substr $first, 0, 1;
+   my $last;
+   if ($#nparts==1){
+      $last = $nparts[1];
+   }elsif ($#nparts ==2){
+      if( length($nparts[1]) == 2 ){
+         $last = $nparts[2];
+      }else{
+          $last = $nparts[1].' '. $nparts[2];
+      }
+   }elsif($#nparts>=3){
+      if( length($nparts[1]) == 2 ){
+         $last = $nparts[2];
+      }else{
+         $last = $nparts[2] . ' ' . $nparts[3];
+      }
+   }
+   $last = substr $last, 0, 8;   # trim to 8 spaces
+   $fname = $f . ' ' . $last;
+   return($fname)
 }
 sub getdxdefinition
 {
