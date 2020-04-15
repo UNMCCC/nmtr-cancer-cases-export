@@ -1,6 +1,7 @@
 /*1.23.15 - KB modified since we are not closing ledger after CLS_ID = 80 (Nov2014); update the whole query to point to Charge table (confirmed w/JP)*/
 /*KB modified 8/29/12 to take out trx_amt and modified Aclose.CLS_ID to prior month
-KB modified 4-26-12 for 2.3 Upgrade (ICD9 fields had to be linked, etc.)*/
+KB modified 4-26-12 for 2.3 Upgrade (ICD9 fields had to be linked, etc.)
+ISG Jan-24-2018.  Changed to remove actual CPTs, which are not usable by NMTR.  Stop at distinct MRN-DOS-DX, reduces the list.4*/
 
 declare @TodayMonthAgo as Date = dateadd(month,-1,GetDate())
 declare @StartOfMonth as Date = DateAdd( day, 1 - Day( @TodayMonthAgo ), @TodayMonthAgo )
@@ -28,15 +29,8 @@ SELECT distinct
  RTRIM (ISNULL(T1.Diag_code,'')) AS Dx1, 
  RTRIM (ISNULL(T2.Diag_code,'')) AS Dx2, 
  RTRIM (ISNULL(T3.Diag_code,'')) AS Dx3, 
- RTRIM (ISNULL(T4.Diag_code,'')) AS Dx4, 
- CPT.CPT_Code AS CPTCode, 
- CPT.Description AS CPTDes/*,
+ RTRIM (ISNULL(T4.Diag_code,'')) AS Dx4
 
- CHG.Exported_Prof_DtTm,
- 
- CHG.Exported_Tech_DtTm*/
-
- 
 FROM         
  Charge CHG
  INNER JOIN Patient ON CHG.Pat_ID1 = Patient.Pat_ID1 
@@ -53,7 +47,6 @@ FROM
 CONVERT(CHAR(8),Exported_Prof_DtTm,112) between @StartOfMonth and @EndOfMonth /*using only prof export date*/
 and CPT.Billable in ('3','2') /*Prof and Tech only for */
 and Facility.Name like 'UNMMG%'
-  --and CPT.CPT_Code <> 'PREPY'
  
 ORDER BY 
  LastName, DOS
