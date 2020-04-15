@@ -63,7 +63,7 @@ my $kkk = 0; my $jjj = 0;
 #
 #  make a lookup table for ICD-10 codes and definitions.
 #
-open(ICD10,"icd10cm_codes_2018.txt") or die "Couldnt open lookup table for icd 10 icd10cm_codes_2018 \n";
+open(ICD10,"icd10cm_codes_2019.txt") or die "Couldnt open lookup table for icd 10 icd10cm_codes_2019 \n";
 while(<ICD10>){
    /\s+/;                                                                                                     ## Match space(s)
    $code10 = $`;                                                                                    ## code is before space
