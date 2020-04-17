@@ -30,7 +30,8 @@ SELECT distinct
  RTRIM (ISNULL(T2.Diag_code,'')) AS Dx2, 
  RTRIM (ISNULL(T3.Diag_code,'')) AS Dx3, 
  RTRIM (ISNULL(T4.Diag_code,'')) AS Dx4, 
- Admin.Pat_Home_Phone
+ Admin.Pat_Home_Phone,
+ Ident.IDF AS TCCID
 /* CPT.CPT_Code AS CPTCode, 
  CPT.Description AS CPTDes,
  CHG.Exported_Prof_DtTm,
