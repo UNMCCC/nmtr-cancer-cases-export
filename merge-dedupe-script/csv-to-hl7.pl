@@ -59,6 +59,7 @@ my ($desc1, $desc2, $desc3, $desc4);
 my ($cdesc1, $cdesc2, $cdesc3, $cdesc4);
 my ($csys1, $csys2, $csys3, $csys4);
 my $kkk = 0; my $jjj = 0;
+my $tccid;
 
 #
 #  make a lookup table for ICD-10 codes and definitions.
@@ -201,21 +202,22 @@ foreach $file (@docfiles) {
                        $dx3 = $tumorcase[18];   ## 2nd second
                        $dx4 = $tumorcase[19];   ## third.
                        $phone = $tumorcase[20];  ## the home phone or cell.
+                       $tccid = $tumorcase[21]; ## the tccid (orien)
                        $phone =~s/\n//;
                        my $temp = $mrn . '-' . $dob;      ## Associative array key MRN+DOB
                        ##
                        ##  See how many DXs in this record
                        if($dx1 =~/\w/){
-                              $unmccc{$temp}{$dos}{1} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx1,$source,$phone";
+                              $unmccc{$temp}{$dos}{1} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx1,$source,$phone,$tccid";
                        }
                        if($dx2 =~/\w/){
-                              $unmccc{$temp}{$dos}{2} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx2,$source,$phone";
+                              $unmccc{$temp}{$dos}{2} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx2,$source,$phone,$tccid";
                        }
                        if($dx3 !~/\w/){
-                              $unmccc{$temp}{$dos}{3} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx,$source,$phone";
+                              $unmccc{$temp}{$dos}{3} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic, $dx,$source,$phone,$tccid";
                        }
                        if($dx4=~/\w/){
-                             $unmccc{$temp}{$dos}{4} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic,$dx,$source,$phone";
+                             $unmccc{$temp}{$dos}{4} = "$mrn, $first, $middle, $last, $sex,$race, $street, $city, $state, $zip,$ssn,$dob,$dod,$expired, $dos, $physic,$dx,$source,$phone,$tccid";
                        }
                        $jjj++;
              }
@@ -268,6 +270,7 @@ foreach my $mrndob (sort keys %unmccc) {
                             }
                             $dos = convertdate($tumorcase[14]);     $physic = $tumorcase[15];   $dx = $tumorcase[16];  $source = $tumorcase[17];
                             $phone = $tumorcase[18];
+                            $tccid = $tumorcase[19];
                            ##  print "$outfiled SRC: $source outfiled: $outfile.  IT exists at $tt \n";
                             if ($dx=~/\d+/) {
                                    ($csys1, $cdesc1) = getdxdefinition($dx);
@@ -289,7 +292,11 @@ foreach my $mrndob (sort keys %unmccc) {
                open(FOUT, ">", $outfile)  or die "Couldnt write to hl7 $outfile";   
                print FOUT 'MSH|^~\&|' . $source . '||||||ADT^A08|' . $outfiled . '|||||||||' . "\r\n";
                print FOUT 'EVN|A08|' . $dos . '||HJB|' . "\r\n";  #could be DOS or Time of export.
-               print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first ;
+               if($tccid=~/\d/){
+                     print FOUT 'PID|1||' . $mrn . '^^^^MRN^~'.$tccid.'^^^^TCC||' . $last . '^' . $first ;
+               }else{
+                     print FOUT 'PID|1||' . $mrn . '||' . $last . '^' . $first ;
+               }
                if ($middle=~/\w/){
                      print FOUT '^' . $middle;
                } 
@@ -308,7 +315,7 @@ foreach my $mrndob (sort keys %unmccc) {
                           }
                      }
                }
-               undef $dx; undef $ethnic; undef $middle;  
+               undef $dx; undef $ethnic; undef $middle;  undef $tccid;
                undef $mrn; undef $last; undef $first; undef $dob; undef $sex ; undef $race; 
                undef $street; undef. $city ; undef $state; undef $zip;
                $vitalflag = 'A';
